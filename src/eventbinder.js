@@ -79,7 +79,7 @@ Backbone.EventBinder = (function(Backbone, _){
   };
 
   // Copy the `extend` function used by Backbone's classes
-  EventBinder.extend = Backbone.View.extend;
+  EventBinder.extend = Backbone.Events.extend;
 
   // Extend the EventBinder with additional methods
   _.extend(EventBinder.prototype, {
@@ -97,6 +97,14 @@ Backbone.EventBinder = (function(Backbone, _){
       this._eventBindings.push(binding);
 
       return binding;
+    },
+    // Implement the trigger method
+    // to allow an event managed approach
+    // where models can have lightweight conversations.
+    trigger: function(type, args){
+      _.each(_.where(this._eventBindings, {eventName: type}),function(obj){
+        obj.callback.apply(obj,[this]);
+      }, args);
     },
 
     // Unbind from a single binding object. Binding objects are
